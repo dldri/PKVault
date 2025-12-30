@@ -1,0 +1,38 @@
+services:
+  # --- BACKEND SERVICE ---
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    container_name: pkvault-backend
+    working_dir: /app/PKVault.Backend
+    volumes:
+      - /home/ubuntu/PKVault/PKVault.Backend/:/app/PKVault.Backend
+      - /mnt/pkvault-storage/pkm:/app/storage
+      - /mnt/pkvault-storage/saves:/app/saves:ro
+    command: >
+      sh -c "dotnet run -p:Mode=gen-pokeapi && 
+             dotnet run"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/swagger/index.html"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --- FRONTEND SERVICE ---
+  frontend:
+    depends_on:
+      backend:
+        condition: service_healthy
+    image: node:20-alpine
+    container_name: pkvault-frontend
+    ports:
+      - 5173:5173
+    working_dir: /app/frontend
+    volumes:
+      - /home/ubuntu/PKVault/frontend/:/app/frontend
+    command: >
+      sh -c "npm install && 
+             VITE_BACKEND_URL=https://${BACKEND_DOMAIN} npm run dev"
+    environment:
+      - BACKEND_DOMAIN=${COOLIFY_FQDN_BACKEND}
