@@ -21,6 +21,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    labels:
+      - "traefik.http.routers.http-0-nkco0wcggoow8408sw8go88w-pkvault-backend.priority=100"
+      - "traefik.http.routers.https-0-nkco0wcggoow8408sw8go88w-pkvault-backend.priority=100"
 
   pkvault-frontend:
     image: 'ghcr.io/dldri/pkvault-frontend:latest'
@@ -29,6 +32,9 @@ services:
     restart: unless-stopped
     depends_on:
       - pkvault-backend
+    labels:
+      - "traefik.http.routers.http-0-nkco0wcggoow8408sw8go88w-pkvault-frontend.priority=10"
+      - "traefik.http.routers.https-0-nkco0wcggoow8408sw8go88w-pkvault-frontend.priority=10"
 
 volumes:
   pkvault_db: null
