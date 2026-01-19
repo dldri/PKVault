@@ -1,6 +1,7 @@
 services:
   pkvault-backend:
     image: 'ghcr.io/dldri/pkvault-backend:latest'
+    pull_policy: always
     environment:
       - 'ASPNETCORE_URLS=http://0.0.0.0:5000'
       - ASPNETCORE_ENVIRONMENT=Development
@@ -27,6 +28,7 @@ services:
 
   pkvault-frontend:
     image: 'ghcr.io/dldri/pkvault-frontend:latest'
+    pull_policy: always
     ports:
       - 5001:80
     restart: unless-stopped
